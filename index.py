@@ -1,14 +1,32 @@
 import joblib
 import pandas as pd
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware # Import CORS Middleware
 from pydantic import BaseModel
 import uvicorn
 
 # Initialize the FastAPI app
 app = FastAPI()
 
+# --- ADD THIS SECTION ---
+# This enables CORS and tells the browser that requests from your
+# Vercel frontend are allowed.
+origins = [
+    "https://credit-risk-alternative-model-dusky.vercel.app", # Your Vercel frontend URL
+    "http://localhost:3000", # For local testing
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+# ------------------------
+
+
 # Define the structure of the input data using Pydantic
-# This ensures that the data sent to the API has the correct format and types.
 class UserFeatures(BaseModel):
     bank_transaction_average: float
     social_media_screentime: float
@@ -17,14 +35,8 @@ class UserFeatures(BaseModel):
     geographical_movement: float
     social_media_reach: int
 
-# Load the trained model pipeline once when the application starts
-# This is much more efficient than loading it for every request.
-try:
-    pipeline = joblib.load('stacked_ensemble_pipeline.pkl')
-except FileNotFoundError:
-    # This is a fallback for local development if the file isn't in the same directory.
-    # In production on Vercel, it will be in the /api directory.
-    pipeline = joblib.load('app/api/stacked_ensemble_pipeline.pkl')
+# Load the trained model pipeline
+pipeline = joblib.load('stacked_ensemble_pipeline.pkl')
 
 @app.get("/")
 def read_root():
@@ -35,8 +47,6 @@ def read_root():
 def predict_loan_status(features: UserFeatures):
     """
     Predicts loan approval based on user features.
-    Receives user data, converts it into a DataFrame,
-    and returns the model's prediction and probability.
     """
     # Convert the input data into a pandas DataFrame
     # The feature names must match exactly what the model was trained on.
@@ -65,6 +75,6 @@ def predict_loan_status(features: UserFeatures):
         "probability_of_approval": float(probability)
     }
 
-# This part is for local testing, it won't be used on Vercel
+# This part is for local testing
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
