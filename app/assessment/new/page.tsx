@@ -149,7 +149,17 @@ export default function NewAssessmentPage() {
 
     try {
       // 2. Call the backend API
-      const response = await fetch("/api/predict", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+      if (!apiUrl) {
+           setError("API URL is not configured. Please contact support.");
+           setIsLoading(false);
+            return; 
+       }
+
+       console.log("Attempting to fetch from API URL:", process.env.NEXT_PUBLIC_API_URL);
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
