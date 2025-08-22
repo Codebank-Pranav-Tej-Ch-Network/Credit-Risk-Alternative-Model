@@ -157,6 +157,8 @@ export default function NewAssessmentPage() {
             return; 
        }
 
+       console.log("Attempting to fetch from API URL:", process.env.NEXT_PUBLIC_API_URL);
+
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
