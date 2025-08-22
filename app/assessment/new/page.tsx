@@ -149,7 +149,15 @@ export default function NewAssessmentPage() {
 
     try {
       // 2. Call the backend API
-      const response = await fetch("https://credit-risk-alternative-model.onrender.com/api/predict", {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+      if (!apiUrl) {
+           setError("API URL is not configured. Please contact support.");
+           setIsLoading(false);
+            return; 
+       }
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
