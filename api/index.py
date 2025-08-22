@@ -31,7 +31,7 @@ def read_root():
     return {"message": "Credit Risk Analysis API is running."}
 
 
-@app.post("/api/predict")
+@app.post("https://credit-risk-alternative-model.onrender.com/api/predict")
 def predict_loan_status(features: UserFeatures):
     """
     Predicts loan approval based on user features.
