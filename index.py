@@ -11,10 +11,7 @@ app = FastAPI()
 # --- ADD THIS SECTION ---
 # This enables CORS and tells the browser that requests from your
 # Vercel frontend are allowed.
-origins = [
-    "https://credit-risk-alternative-model-dusky.vercel.app", # Your Vercel frontend URL
-    "http://localhost:3000", # For local testing
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -78,3 +75,4 @@ def predict_loan_status(features: UserFeatures):
 # This part is for local testing
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
